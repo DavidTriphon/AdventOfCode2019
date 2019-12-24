@@ -7,9 +7,20 @@ import java.util.function.*;
 
 public class InfiniteGridMap <T> implements GridMap <T>
 {
+   // fields
+   
    private T _defaultValue;
    
    private HashMap <Point, T> _map;
+   
+   // constructors
+   
+   
+   public InfiniteGridMap(InfiniteGridMap <T> map)
+   {
+      _map = new HashMap <>(map._map);
+      _defaultValue = map._defaultValue;
+   }
    
    
    public InfiniteGridMap(T defaultValue)
@@ -17,6 +28,8 @@ public class InfiniteGridMap <T> implements GridMap <T>
       _map = new HashMap <>();
       _defaultValue = defaultValue;
    }
+   
+   // implemented methods
    
    
    @Override
@@ -34,6 +47,8 @@ public class InfiniteGridMap <T> implements GridMap <T>
    {
       _map.put(new Point(pos), obj);
    }
+   
+   // public methods
    
    
    public long countOf(T obj)
@@ -54,6 +69,12 @@ public class InfiniteGridMap <T> implements GridMap <T>
    
    
    public String toMapString(Function <T, Character> translator)
+   {
+      return toMapStringS((i) -> (translator.apply(i).toString()));
+   }
+   
+   
+   public String toMapStringS(Function <T, String> translator)
    {
       // find bounds for rectangle representative
       int minX = Integer.MAX_VALUE;
@@ -82,7 +103,7 @@ public class InfiniteGridMap <T> implements GridMap <T>
       {
          for (int x = minX; x <= maxX; x++)
          {
-            char rep = translator.apply(get(new Point(x, y)));
+            String rep = translator.apply(get(new Point(x, y)));
             sb.append(rep);
          }
          
