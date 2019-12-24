@@ -67,6 +67,18 @@ public class InfiniteGridMap <T> implements GridMap <T>
       return count;
    }
    
+   public HashMap <Point, T> getLocations()
+   {
+      HashMap <Point, T> map = new HashMap <>();
+      
+      for (Map.Entry<Point, T> entry : _map.entrySet())
+      {
+         map.put(new Point(entry.getKey()), entry.getValue());
+      }
+      
+      return map;
+   }
+   
    
    public String toMapString(Function <T, Character> translator)
    {

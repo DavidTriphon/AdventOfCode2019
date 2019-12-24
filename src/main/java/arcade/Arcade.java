@@ -5,6 +5,7 @@ import map.*;
 
 import java.awt.*;
 import java.io.*;
+import java.util.*;
 import java.util.function.*;
 
 
@@ -18,6 +19,16 @@ public class Arcade
    public static final int TILE_PADDLE = 3;
    public static final int TILE_BALL   = 4;
    
+   public static final long JOYSTICK_LEFT    = -1;
+   public static final long JOYSTICK_NEUTRAL = 0;
+   public static final long JOYSTICK_RIGHT   = 1;
+   
+   private static final long SEGMENT_X = -1;
+   private static final long SEGMENT_Y = 0;
+   
+   private static final int  QUARTER_INDEX = 0;
+   private static final long QUARTER_COUNT = 2L;
+   
    private static final String PROGRAM_FILE_LOC = "src/main/resources/input13.txt";
    
    private static final Function <Integer, String> TRANSLATOR = (i) ->
@@ -27,7 +38,7 @@ public class Arcade
          case TILE_EMPTY:
             return "  ";
          case TILE_WALL:
-            return "  ";
+            return "XX";
          case TILE_BLOCK:
             return "[]";
          case TILE_PADDLE:
@@ -45,7 +56,8 @@ public class Arcade
    
    private InfiniteGridMap <Integer> _screen = new InfiniteGridMap <>(TILE_EMPTY);
    
-   private int outIndex = 0;
+   private int  _outIndex       = 0;
+   private long _segmentDisplay = 0;
    
    // constructors
    
@@ -72,14 +84,87 @@ public class Arcade
       
       Long[] out = _program.getOutput();
       
-      while (outIndex < out.length)
+      while (_outIndex < out.length)
       {
-         long x = out[outIndex++];
-         long y = out[outIndex++];
-         long tile = out[outIndex++];
+         long x = out[_outIndex++];
+         long y = out[_outIndex++];
+         long tile = out[_outIndex++];
          
-         _screen.set(new Point((int) x, (int) y), (int) tile);
+         if (x == SEGMENT_X && y == SEGMENT_Y)
+         {
+            _segmentDisplay = tile;
+         }
+         else
+         {
+            _screen.set(new Point((int) x, (int) y), (int) tile);
+         }
       }
+   }
+   
+   
+   public void hackQuarters()
+   {
+      Long[] mem = _program.getMemory();
+      mem[QUARTER_INDEX] = QUARTER_COUNT;
+      _program.setMemory(mem);
+   }
+   
+   
+   public void setJoystick(long value)
+   {
+      _program.setInput(new Long[] {value});
+   }
+   
+   
+   public boolean isPlaying()
+   {
+      return !isWon() && !isLost();
+   }
+   
+   
+   public boolean isWon()
+   {
+      return _screen.countOf(TILE_BLOCK) == 0;
+   }
+   
+   
+   public boolean isLost()
+   {
+      return _program.isHalted();
+   }
+   
+   
+   public long getCurrentScore()
+   {
+      return _segmentDisplay;
+   }
+   
+   
+   public int getBallX()
+   {
+      for (Map.Entry <Point, Integer> entry : _screen.getLocations().entrySet())
+      {
+         if (entry.getValue().equals(TILE_BALL))
+         {
+            return entry.getKey().x;
+         }
+      }
+      
+      throw new IllegalStateException("The ball is not on the screen!");
+   }
+   
+   
+   public int getPaddleX()
+   {
+      for (Map.Entry <Point, Integer> entry : _screen.getLocations().entrySet())
+      {
+         if (entry.getValue().equals(TILE_PADDLE))
+         {
+            return entry.getKey().x;
+         }
+      }
+      
+      throw new IllegalStateException("The paddle is not on the screen!");
    }
    
    
