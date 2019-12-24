@@ -50,6 +50,16 @@ public enum Direction
    }
    
    
+   public Direction up()
+   {
+      return this;
+   }
+   
+   public Direction down()
+   {
+      return cw().cw();
+   }
+   
    public void move(Point pos)
    {
       move(pos, 1);
