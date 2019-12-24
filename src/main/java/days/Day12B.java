@@ -6,11 +6,9 @@ import util.*;
 import java.io.*;
 
 
-public class Day12
+public class Day12B
 {
    private static final String INPUT_FILE_LOC = "src/main/resources/input12.txt";
-   
-   private static final int STEP_COUNT = 1000;
    
    
    public static void main(String... args) throws IOException
@@ -19,8 +17,6 @@ public class Day12
       
       NBody nBody = NBody.fromString(fileString);
       
-      nBody.timeStep(STEP_COUNT);
-      
-      System.out.println(nBody.getEnergy());
+      System.out.print(nBody.getLoopTime());
    }
 }
