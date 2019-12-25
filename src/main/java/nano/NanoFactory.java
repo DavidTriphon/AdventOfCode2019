@@ -37,33 +37,69 @@ public class NanoFactory
    }
    
    
-   public int getOreCostOfFuel()
+   public long getOreCostOfFuel()
    {
-      return getOreRequired(new Ingredient(FUEL, 1));
+      return getOreRequired(new Ingredient(FUEL));
    }
    
    
-   public int getOreRequired(Ingredient result)
+   public long getOreRequired(Ingredient result)
    {
       return getOreRequired(result, new HashMap <>());
+   }
+   
+   
+   public long getMaxFuelFromOre(long amount)
+   {
+      ArrayList <Long> steps = new ArrayList <>();
+      
+      HashMap <String, Long> spareIngredients = new HashMap <>();
+      
+      Ingredient fuel = new Ingredient(FUEL);
+   
+      long cycleCost = 0;
+      
+      do
+      {
+         long req = getOreRequired(fuel, spareIngredients);
+         
+         steps.add(req);
+         cycleCost += req;
+      }
+      while (!spareIngredients.isEmpty() && cycleCost < amount);
+      
+      long cycleFuel = steps.size();
+      
+      long maxCycleCount = amount / cycleCost;
+      amount -= maxCycleCount * cycleCost;
+      long maxFuel = maxCycleCount * cycleFuel;
+      
+      for (int i = 0; i < steps.size() && amount >= 0; i++)
+      {
+         amount -= steps.get(i);
+         if (amount >= 0)
+            maxFuel++;
+      }
+      
+      return maxFuel;
    }
    
    // private methods
    
    
-   private int getOreRequired(Ingredient reqResult,
-     HashMap <String, Integer> spareIngredients)
+   private long getOreRequired(Ingredient reqResult,
+     HashMap <String, Long> spareIngredients)
    {
       if (reqResult.name.equals(ORE))
          return reqResult.amount;
       
-      int ore = 0;
+      long ore = 0;
       
-      int reqResultAmount = reqResult.amount;
+      long reqResultAmount = reqResult.amount;
       
       if (spareIngredients.containsKey(reqResult.name))
       {
-         int available = spareIngredients.get(reqResult.name);
+         long available = spareIngredients.get(reqResult.name);
          
          if (reqResultAmount < available)
          {
@@ -84,13 +120,14 @@ public class NanoFactory
       
       Recipe recipe = _recipes.get(reqResult.name);
       
-      int multRecipe = (int) Math.ceil((1.0 * reqResultAmount) / (1.0 * recipe.getOutput().amount));
+      long multRecipe =
+        (long) Math.ceil((1.0 * reqResultAmount) / (1.0 * recipe.getOutput().amount));
       
-      int remainder = (recipe.getOutput().amount * multRecipe) - reqResultAmount;
+      long remainder = (recipe.getOutput().amount * multRecipe) - reqResultAmount;
       
       for (Ingredient reqIng : recipe.getInputs())
       {
-         ore += getOreRequired(new Ingredient(reqIng.name, reqIng.amount * multRecipe),
+         ore += getOreRequired(new Ingredient(reqIng, reqIng.amount * multRecipe),
            spareIngredients);
       }
       

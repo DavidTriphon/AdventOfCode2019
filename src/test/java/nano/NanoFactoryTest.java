@@ -5,12 +5,15 @@ import util.*;
 
 import java.io.*;
 
+import static nano.NanoFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
 class NanoFactoryTest
 {
    private static final String FILE_LOC_PREFIX = "src/test/resources/nano/";
+   
+   private static final long ORE_GATHERED = 1000000000000L;
    
    
    @Test
@@ -48,16 +51,32 @@ class NanoFactoryTest
    }
    
    
+   @Test
+   void testCBuild()
+   {
+      testBuildUp("c.txt", 82892753);
+   }
+   
+   
+   @Test
+   void testDBuild()
+   {
+      testBuildUp("d.txt", 5586022);
+   }
+   
+   
+   @Test
+   void testEBuild()
+   {
+      testBuildUp("e.txt", 460664);
+   }
+   
+   
    private static void testFunc(String filename, int expectRecipes, int expectCost)
    {
       try
       {
-         NanoFactory fact =
-           NanoFactory.fromString(ParseUtil.getFileString(getFullFilename(filename)));
-         
-         System.out.println(fact);
-         
-         System.out.println(fact.toFormatString());
+         NanoFactory fact = getFactFromFilename(filename);
          
          assertEquals(expectRecipes, fact.getRecipeCount());
          
@@ -67,6 +86,31 @@ class NanoFactoryTest
       {
          fail();
       }
+   }
+   
+   
+   private static void testBuildUp(String filename, long from1tril)
+   {
+      try
+      {
+         NanoFactory fact = getFactFromFilename(filename);
+         
+         assertTrue(ORE_GATHERED >= fact.getOreRequired(new Ingredient(FUEL, from1tril)));
+         assertTrue(ORE_GATHERED < fact.getOreRequired(new Ingredient(FUEL, from1tril + 1)));
+         
+         assertEquals(from1tril, fact.getMaxFuelFromOre(ORE_GATHERED),
+           "returned fuel amount is wrong");
+      }
+      catch (IOException exc)
+      {
+         fail();
+      }
+   }
+   
+   
+   private static NanoFactory getFactFromFilename(String filename) throws IOException
+   {
+      return NanoFactory.fromString(ParseUtil.getFileString(getFullFilename(filename)));
    }
    
    

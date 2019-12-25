@@ -8,18 +8,31 @@ public class Ingredient
    // fields
    
    public final String name;
-   public final int    amount;
+   public final long    amount;
    
    // constructor
    
    
-   public Ingredient(String name, int amount)
+   public Ingredient(String name, long amount)
    {
       this.name = name;
       this.amount = amount;
    }
    
+   
+   public Ingredient(String name)
+   {
+      this(name, 1);
+   }
+   
+   
+   public Ingredient(Ingredient ing, long amount)
+   {
+      this(ing.name, amount);
+   }
+   
    // public methods
+   
    
    public String toFormatString()
    {
