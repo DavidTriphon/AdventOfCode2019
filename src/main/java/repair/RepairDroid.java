@@ -51,9 +51,9 @@ public class RepairDroid
          case TILE_BLOCKED:
             return "##";
          case TILE_ROBOT:
-            return "()";
+            return "[]";
          case TILE_OXYGEN:
-            return "!!";
+            return "OO";
          case TILE_DEADEND:
             return "..";
          default:
@@ -91,32 +91,89 @@ public class RepairDroid
    
    // public methods
    
+   
    public void autoFindOxygen()
    {
       Direction dir = Direction.UP;
-   
+      
       while (!foundOxygen())
       {
          if (move(dir.right()) != RepairDroid.RESPONSE_BLOCKED)
          {
             move(dir.left());
          }
-      
+         
          if (move(dir.left()) != RepairDroid.RESPONSE_BLOCKED)
          {
             move(dir.right());
          }
-      
+         
          if (move(dir) == RepairDroid.RESPONSE_BLOCKED)
          {
             dir = dir.right();
-         
+            
             if (move(dir) == RepairDroid.RESPONSE_BLOCKED)
             {
                dir = dir.down();
             }
          }
       }
+   }
+   
+   
+   public void autoExploreMap()
+   {
+      Direction dir = Direction.UP;
+      
+      do
+      {
+         if (move(dir) == RepairDroid.RESPONSE_BLOCKED)
+         {
+            dir = dir.right();
+         }
+         else
+         {
+            dir = dir.left();
+         }
+      }
+      while (!_currentPos.equals(new Point()));
+   }
+   
+   
+   public int timeToOxygenation()
+   {
+      InfiniteGridMap <Integer> current = getMap();
+      current.set(_currentPos, TILE_PATH);
+      
+      int time = 0;
+      
+      while (current.countOf(TILE_PATH) + current.countOf(TILE_DEADEND) > 0)
+      {
+         InfiniteGridMap <Integer> next = new InfiniteGridMap <>(current);
+         
+         for (Map.Entry <Point, Integer> entry : current.getLocations().entrySet())
+         {
+            if (entry.getValue() == TILE_OXYGEN)
+            {
+               for (Direction dir : Direction.values())
+               {
+                  Point nextToPos = new Point(entry.getKey());
+                  dir.move(nextToPos);
+                  
+                  int nextDoor = next.get(nextToPos);
+                  
+                  if (nextDoor == TILE_PATH || nextDoor == TILE_DEADEND)
+                     next.set(nextToPos, TILE_OXYGEN);
+               }
+            }
+         }
+         
+         current = next;
+         
+         time++;
+      }
+      
+      return time;
    }
    
    
