@@ -74,11 +74,11 @@ public class EmergencyPaintingRobot
          // turn
          if (dir == TURN_LEFT)
          {
-            _dir = _dir.ccw();
+            _dir = _dir.left();
          }
          else if (dir == TURN_RIGHT)
          {
-            _dir = _dir.cw();
+            _dir = _dir.right();
          }
          
          // move 1 space

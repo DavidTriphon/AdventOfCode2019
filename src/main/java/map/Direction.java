@@ -38,13 +38,13 @@ public enum Direction
    }
    
    
-   public Direction ccw()
+   public Direction left()
    {
       return _ccw;
    }
    
    
-   public Direction cw()
+   public Direction right()
    {
       return _cw;
    }
@@ -55,10 +55,12 @@ public enum Direction
       return this;
    }
    
+   
    public Direction down()
    {
-      return cw().cw();
+      return right().right();
    }
+   
    
    public void move(Point pos)
    {

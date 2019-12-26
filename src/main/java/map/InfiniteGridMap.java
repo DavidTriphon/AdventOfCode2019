@@ -99,12 +99,12 @@ public class InfiniteGridMap <T> implements GridMap <T>
       {
          if (pos.x > maxX)
             maxX = pos.x;
-         else if (pos.x < minX)
+         if (pos.x < minX)
             minX = pos.x;
          
          if (pos.y > maxY)
             maxY = pos.y;
-         else if (pos.y < minY)
+         if (pos.y < minY)
             minY = pos.y;
       }
       
