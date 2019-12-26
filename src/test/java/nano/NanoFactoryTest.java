@@ -52,6 +52,27 @@ class NanoFactoryTest
    
    
    @Test
+   void testCBuildOld()
+   {
+      testBuildUpOld("c.txt", 82892753);
+   }
+   
+   
+   @Test
+   void testDBuildOld()
+   {
+      testBuildUpOld("d.txt", 5586022);
+   }
+   
+   
+   @Test
+   void testEBuildOld()
+   {
+      testBuildUpOld("e.txt", 460664);
+   }
+   
+   
+   @Test
    void testCBuild()
    {
       testBuildUp("c.txt", 82892753);
@@ -81,6 +102,25 @@ class NanoFactoryTest
          assertEquals(expectRecipes, fact.getRecipeCount());
          
          assertEquals(expectCost, fact.getOreCostOfFuel());
+      }
+      catch (IOException exc)
+      {
+         fail();
+      }
+   }
+   
+   
+   private static void testBuildUpOld(String filename, long from1tril)
+   {
+      try
+      {
+         NanoFactory fact = getFactFromFilename(filename);
+         
+         assertTrue(ORE_GATHERED >= fact.getOreRequired(new Ingredient(FUEL, from1tril)));
+         assertTrue(ORE_GATHERED < fact.getOreRequired(new Ingredient(FUEL, from1tril + 1)));
+         
+         assertEquals(from1tril, fact.getMaxFuelFromOreOld(ORE_GATHERED),
+           "returned fuel amount is wrong");
       }
       catch (IOException exc)
       {

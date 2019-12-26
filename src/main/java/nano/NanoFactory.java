@@ -51,12 +51,42 @@ public class NanoFactory
    
    public long getMaxFuelFromOre(long amount)
    {
+      long upperFuelBound = 1;
+      
+      long reqOre;
+      
+      do
+      {
+         upperFuelBound *= 2;
+         reqOre = getOreRequired(new Ingredient(FUEL, upperFuelBound));
+      }
+      while (reqOre < amount);
+      
+      long lowerFuelBound = upperFuelBound / 2;
+      
+      while (lowerFuelBound + 1 < upperFuelBound)
+      {
+         long middleFuel = lowerFuelBound + (upperFuelBound - lowerFuelBound) / 2;
+         reqOre = getOreRequired(new Ingredient(FUEL, middleFuel));
+         
+         if (reqOre <= amount)
+            lowerFuelBound = middleFuel;
+         else
+            upperFuelBound = middleFuel;
+      }
+      
+      return lowerFuelBound;
+   }
+   
+   
+   public long getMaxFuelFromOreOld(long amount)
+   {
       ArrayList <Long> steps = new ArrayList <>();
       
       HashMap <String, Long> spareIngredients = new HashMap <>();
       
       Ingredient fuel = new Ingredient(FUEL);
-   
+      
       long cycleCost = 0;
       
       do
