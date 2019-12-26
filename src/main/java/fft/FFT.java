@@ -15,11 +15,11 @@ public class FFT
          
          int patternIndex = 0;
          
-         for (int j = i; j < resDigits.length;)
+         for (int j = i; j < resDigits.length; )
          {
             for (int k = 0; k <= i && j < resDigits.length; k++, j++)
             {
-               sum += ((long) digits[j]) * ((long) PATTERN[patternIndex]);
+               sum += digits[j] * PATTERN[patternIndex];
             }
             
             patternIndex = (patternIndex + 1) % PATTERN.length;

@@ -22,6 +22,6 @@ public class Day16
          digits = FFT.process(digits);
       }
       
-      System.out.println(FFT.stringifyDigits(digits).substring(0,8));
+      System.out.println(FFT.stringifyDigits(digits).substring(0, 8));
    }
 }
