@@ -1,15 +1,29 @@
 package map;
 
 import java.awt.*;
+import java.util.*;
 import java.util.function.*;
 
 
 public class FiniteGridMap <T> implements GridMap <T>
 {
+   // fields
+   
    private Object[][] _map;
    
    public final int width;
    public final int height;
+   
+   // constructors
+   
+   
+   public FiniteGridMap(FiniteGridMap <T> map)
+   {
+      width = map.width;
+      height = map.height;
+      
+      _map = Arrays.copyOf(map._map, width * height);
+   }
    
    
    public FiniteGridMap(int width, int height)
@@ -33,6 +47,8 @@ public class FiniteGridMap <T> implements GridMap <T>
       }
    }
    
+   // public methods
+   
    
    @SuppressWarnings("unchecked")
    public T get(Point pos)
@@ -49,6 +65,51 @@ public class FiniteGridMap <T> implements GridMap <T>
    }
    
    
+   public int getCountOf(T obj)
+   {
+      int count = 0;
+      
+      for (int y = 0; y < height; y++)
+      {
+         for (int x = 0; x < width; x++)
+         {
+            if (_map[x][y].equals(obj))
+               count++;
+         }
+      }
+      
+      return count;
+   }
+   
+   
+   public String toMapString(Function <T, Character> translator)
+   {
+      return toMapStringS((i) -> (translator.apply(i).toString()));
+   }
+   
+   
+   public String toMapStringS(Function <T, String> translator)
+   {
+      // generate string grid using translator
+      StringBuilder sb = new StringBuilder();
+      
+      for (int y = height - 1; y >= 0; y--)
+      {
+         for (int x = 0; x < width; x++)
+         {
+            String rep = translator.apply((T)_map[x][y]);
+            sb.append(rep);
+         }
+         
+         sb.append('\n');
+      }
+      
+      return sb.toString();
+   }
+   
+   // private methods
+   
+   
    private void checkBounds(Point pos)
    {
       if (!(0 <= pos.x && pos.x < width))
@@ -58,6 +119,8 @@ public class FiniteGridMap <T> implements GridMap <T>
          throw new IllegalArgumentException(
            String.format("Y pos (%d) is out of bounds !(0 <= x && x < %d)", pos.y, height));
    }
+   
+   // static methods
    
    
    public static <T> FiniteGridMap <T> fromString(String mapString,

@@ -73,4 +73,18 @@ public enum Direction
       pos.x += x * mag;
       pos.y += y * mag;
    }
+   
+   
+   public Point offset(Point pos)
+   {
+      return offset(pos, 1);
+   }
+   
+   
+   public Point offset(Point pos, int mag)
+   {
+      Point ret = new Point(pos);
+      move(ret, mag);
+      return ret;
+   }
 }
